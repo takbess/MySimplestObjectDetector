@@ -1,0 +1,9 @@
+setup.py
+OD/__init__.py
+OD/metrics.py
+OD/modeling.py
+OD/my_cocoapi.py
+takumi_libary.egg-info/PKG-INFO
+takumi_libary.egg-info/SOURCES.txt
+takumi_libary.egg-info/dependency_links.txt
+takumi_libary.egg-info/top_level.txt

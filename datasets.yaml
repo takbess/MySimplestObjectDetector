@@ -1,0 +1,8 @@
+mscoco:
+  test:
+    annotation: "/mnt/c/Users/bt_ga/allpython/DATASET/coco/annotations/datasets_fewshot/cocosplit/datasplit/5k.json"
+    image_dir: "/mnt/c/Users/bt_ga/allpython/DATASET/coco/images/val2014"
+
+  one_person:
+    annotation: "/mnt/c/Users/bt_ga/allpython/DATASET/coco/annotations/5k_one_person.json"
+    image_dir: "/mnt/c/Users/bt_ga/allpython/DATASET/coco/images/val2014"

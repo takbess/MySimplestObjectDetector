@@ -1,10 +1,9 @@
-from TKM.OD import modeling
+import yaml,json
 import torch
 from torch.utils.data import DataLoader
 
 # datasets.yaml loaded
-import yaml,json
-with open("datasets.yaml","r") as f:
+with open("data/datasets.yaml","r") as f:
     datasets_cfg = yaml.safe_load(f)
 
 # mscoco.one_person dataset

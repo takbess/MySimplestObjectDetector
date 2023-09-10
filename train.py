@@ -1,17 +1,18 @@
 # train.py
 
-print("\n start")
+# print("\n start")
 
 from pathlib import Path
-import sys,os
+import sys
+import os
 import argparse
 
-from old.TKM.OD import modeling
+# from old.TKM.OD import modeling
 import torch
-from torch.utils.data import DataLoader
+# from torch.utils.data import DataLoader
 import torch.nn as nn
-from TKM.OD import metrics
-import sys
+# from TKM.OD import metrics
+
 
 FILE = Path(__file__).resolve() # このファイルの絶対パスを取得
 ROOT = FILE.parents[0] # 実行ファイルの親ディレクトリの絶対パスを取得
@@ -114,17 +115,12 @@ def train():
     torch.save(model.state_dict,"output/model.pth")
 
 
-def parse_opt(known=False):
-    parser = argparse.ArgumentParser(description=" I'm learning yolov5 ")
-    parser.add_argument("--cfg",type=str, default="",help="model yaml path")
-    parser.add_argument("--epoch",default=10,help="epoch=10 in default")
-
-    return parser.parse_args()
-
 def main(args):
     train()
 
 if __name__ == "__main__":
-    args = parse_opt()
+    parser = argparse.ArgumentParser(description=" I'm learning yolov5 ")
+    parser.add_argument("--cfg",type=str, default="",help="model yaml path")
+    parser.add_argument("--epoch",default=10,help="epoch=10 in default")
+    args = parser.parse_args()
     main(args)
-    

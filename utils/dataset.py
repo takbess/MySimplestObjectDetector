@@ -6,6 +6,8 @@ from torch.utils.data import DataLoader
 with open("data/datasets.yaml","r") as f:
     datasets_cfg = yaml.safe_load(f)
 
+DATASET="PascalVOC"
+
 # mscoco.one_person dataset
 one_person_datasets_cfg = datasets_cfg['mscoco']['one_person']
 json_path = one_person_datasets_cfg['annotation']

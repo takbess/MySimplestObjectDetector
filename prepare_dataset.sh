@@ -6,6 +6,16 @@ cd dataset
 # https://public.roboflow.com/object-detection/pascal-voc-2012/1
 curl -L "https://public.roboflow.com/ds/cqVKG2FrTp?key=hogehoge" > roboflow.zip; unzip roboflow.zip; rm roboflow.zip
 
+echo "check the number of images"
+echo "train"
+find train | wc
+echo "valid"
+find valid | wc
+
+cd ../
+
+python dataset/one_person_dataset.py
+
 # wget -nc http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar
 # wget -nc http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCdevkit_18-May-2011.tar
 # tar xvf dataset/VOCdevkit_18-May-2011.tar

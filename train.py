@@ -21,6 +21,9 @@ if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 ROOT = Path(os.path.relpath(ROOT,Path.cwd())) # cwd からの相対パスに変換
 
+# create one person dataset !!!
+from dataset import one_person_dataset
+
 from models import modeling
 from utils import metrics
 from utils import my_cocoapi

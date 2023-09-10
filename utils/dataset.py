@@ -16,12 +16,6 @@ with open("data/datasets.yaml","r") as f:
 
 DATASET="PascalVOC_one_person"
 
-# mscoco.one_person dataset
-for split in ['train','test']:
-    json_path = datasets_cfg[DATASET][split]['annotation']
-    img_dir = datasets_cfg[DATASET][split]['image_dir']
-
-
 def get_one_bbox_dataset(json_path,img_dir):
     # json_path is in coco format, and one annotation for one image is expected
     # dataset[i]['image'] = np.array([]) 3rd order tensor
@@ -89,6 +83,13 @@ def get_one_bbox_dataset(json_path,img_dir):
     train_dataset = torch.utils.data.Subset(dataset,indices=perm[:train_num])
     test_dataset = torch.utils.data.Subset(dataset,indices=perm[train_num:])
 
+
+# mscoco.one_person dataset
+for split in ['train','test']:
+    json_path = datasets_cfg[DATASET][split]['annotation']
+    img_dir = datasets_cfg[DATASET][split]['image_dir']
+
+    dataset = get_one_bbox_dataset(json_path,img_dir)
 
     batch_size=4
     train_loader= DataLoader(train_dataset, batch_size=batch_size, shuffle=True)

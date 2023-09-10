@@ -3,7 +3,10 @@ import json
 import copy
 import numpy as np
 import os
-from utils import my_cocoapi
+# from utils import my_cocoapi
+print(os.listdir("./"))
+# from utils import my_cocoapi # python3 train.py の中で import prepare_one_person_dataset をするときはこっち。
+import my_cocoapi # なぜか python3 utils/prepare_one_person_dataset.py の時はこっちだと上手くいく
 from pycocotools.coco import COCO
 
 DATASET="PascalVOC"

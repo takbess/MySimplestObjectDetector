@@ -23,7 +23,7 @@ ROOT = Path(os.path.relpath(ROOT,Path.cwd())) # cwd からの相対パスに変�
 
 # create one person dataset 
 # already made during parepare_dataset.sh
-# from dataset import one_person_dataset
+from utils import prepare_one_person_dataset
 
 # 09/10 dataset.py is under construction
 from utils.dataset import one_person_dataloader

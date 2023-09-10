@@ -18,7 +18,7 @@ RESIZE=True
 
 from pycocotools.coco import COCO
 import os
-import cv2
+# import cv2
 from tqdm import tqdm
 from PIL import Image
 import torchvision.transforms as transforms

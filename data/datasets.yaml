@@ -15,3 +15,11 @@ PascalVOC:
   test:
     annotation: "dataset/valid/_annotations.coco.json"
     image_dir: "dataset/valid"
+
+PascalVOC_one_person:
+  train:
+    annotation: "dataset/train/_annotations.coco_one_person.json"
+    image_dir: "dataset/train"
+  test:
+    annotation: "dataset/valid/_annotations.coco_one_person.json"
+    image_dir: "dataset/valid"

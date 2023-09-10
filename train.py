@@ -117,6 +117,7 @@ def train():
 def parse_opt(known=False):
     parser = argparse.ArgumentParser(description=" I'm learning yolov5 ")
     parser.add_argument("--cfg",type=str, default="",help="model yaml path")
+    parser.add_argument("--epoch",default=10,help="epoch=10 in default")
 
     return parser.parse_args()
 

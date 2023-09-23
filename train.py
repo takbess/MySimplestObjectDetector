@@ -21,27 +21,29 @@ if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
 ROOT = Path(os.path.relpath(ROOT,Path.cwd())) # cwd からの相対パスに変換
 
-# create one person dataset 
+# create one person dataset
 # already made during parepare_dataset.sh
-from utils import prepare_one_person_dataset
+# from utils import prepare_one_person_dataset
 
-# 09/10 dataset.py is under construction
-from utils.dataset import one_person_dataloader
+# data_loader
+from utils.dataset import data_loader
 
 from models import modeling
 from utils import metrics
 from utils import my_cocoapi
 
 import torchsummary
-from time import time
+import time 
 
 
 def train():
     # hyper parameter
     loss_index = 0
     epoch_num = 10
-    batch_size = 16 
-    train_loader,test_loader = one_person_dataloader()
+    batch_size = 16
+    IMAGE_SIZE=(32,32)
+    train_loader = data_loader('train', batch_size,IMAGE_SIZE)
+    test_loader = data_loader('test', batch_size,IMAGE_SIZE)
 
     model = modeling.SimpleObjectDetector()
     # check model
@@ -60,7 +62,7 @@ def train():
         criterion.cuda()
 
     model.train()
-    start = time()
+    start = time.time()
     for epoch in range(1,epoch_num+1):
         sum_loss = 0
         sum_IoU = 0
@@ -71,6 +73,15 @@ def train():
         for data in train_loader:
             image = data['image']
             bbox = data['bbox']
+            image_id = data['image_id']
+            if __debug__:
+                for img_id,img,bbx in zip(image_id,image,bbox):
+                    import numpy as np
+                    img = np.array(img.cpu())
+                    img = img.transpose(1,2,0)
+                    bbx = np.array(bbx.cpu())
+                    my_cocoapi.save_image_w1bbox(img,bbx,f'images/{img_id}_train_loader.jpg')
+
             image = image.cuda()
             bbox = bbox.cuda()
 
@@ -89,7 +100,7 @@ def train():
         if show_progress:
             print("epoch: {}, mean_loss: {}, mean_IoU: {}, elapsed_time: {}".format(epoch, sum_loss/(len(train_loader)*batch_size),
                                                                     sum_IoU/(len(train_loader)*batch_size),
-                                                                    time() - start  ))
+                                                                    time.time() - start  ))
         
         # test
         model.eval()
@@ -117,9 +128,12 @@ def train():
         if show_progress:
             print("epoch: {}, mean_loss: {}, mean_IoU: {}, elapsed_time: {}".format(epoch, sum_loss/(len(train_loader)*batch_size),
                                                                     sum_IoU/(len(train_loader)*batch_size),
-                                                                    time() - start  )) 
-    torch.save(model.state_dict,"output/model.pth")
-
+                                                                    time.time() - start  )) 
+    
+    print("The end of the training")
+    save_path = f"{args.output_dir}/model.pth"
+    torch.save(model.state_dict,save_path)
+    print(f"the final model.state: {save_path}.")
 
 def main(args):
     train()
@@ -128,5 +142,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=" I'm learning yolov5 ")
     parser.add_argument("--cfg",type=str, default="",help="model yaml path")
     parser.add_argument("--epoch",default=10,help="epoch=10 in default")
+    parser.add_argument("--save_dir",default="output")
     args = parser.parse_args()
     main(args)

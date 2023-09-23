@@ -1,5 +1,5 @@
 from pycocotools.coco import COCO
-import os
+import os,time
 import matplotlib.pyplot as plt
 import random
 from PIL import Image
@@ -37,21 +37,16 @@ def show_anns(json_path,img_dir,save_dir,NUM=5,use_random=True):
 
 # cocoapi version. I do not like this...
 def show_anns_cocoapi(json_path,img_dir,NUM=5,use_random=True):
-    from pycocotools.coco import COCO
     coco = COCO(json_path)
     image_ids = coco.getImgIds()
     # get NUM number images from image_ids
     if use_random:
-        import random
         image_ids = random.choices(image_ids,k=NUM)
         image_infos = coco.loadImgs(image_ids)
     else:
         image_infos = coco.loadImgs(image_ids[:NUM])
 
     # plot
-    import os,time
-    from PIL import Image
-    import matplotlib.pyplot as plt
     for image_info in image_infos:
         img_file = image_info['file_name']
         img_path = os.path.join(img_dir,img_file)
@@ -65,3 +60,13 @@ def show_anns_cocoapi(json_path,img_dir,NUM=5,use_random=True):
         plt.savefig("aaa.jpg")
         plt.clf()
         time.sleep(0.5)
+
+def save_image_w1bbox(image,bbox,save_path):
+    # save_path = 'aaa.jpg'
+    plt.imshow(image)
+    x,y,w,h = bbox
+    plt.plot([x,x+w,x+w,x,x],[y,y,y+h,y+h,y],color='red')
+
+    plt.savefig(save_path)
+    plt.clf()
+    plt.close()

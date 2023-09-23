@@ -13,7 +13,10 @@
             "args": [
                 "--cfg",
                 "models/model1.yaml"
-            ]
+            ],
+            "env": {
+                "__debug__": "True"
+            }
         }
     ]
 }

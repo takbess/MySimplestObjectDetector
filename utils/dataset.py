@@ -4,24 +4,24 @@ from torch.utils.data import DataLoader
 
 from pycocotools.coco import COCO
 import os
-# import cv2
 from tqdm import tqdm
 from PIL import Image
 import torchvision.transforms as transforms
 import torch
 
+# parameter
+DATASET="PascalVOC_one_person"
+
 # datasets.yaml loaded
 with open("data/datasets.yaml","r") as f:
     datasets_cfg = yaml.safe_load(f)
 
-DATASET="PascalVOC_one_person"
-
-def get_one_bbox_dataset(json_path,img_dir):
+RESIZE=True
+def get_one_bbox_dataset(json_path,img_dir,IMAGE_SIZE,split):
     # json_path is in coco format, and one annotation for one image is expected
+    # dataset[i]['image_id'] = int
     # dataset[i]['image'] = np.array([]) 3rd order tensor
     # dataset[i]['bbox'] = (x,y,w,h)
-    IMAGE_SIZE=(32,32)
-    RESIZE=True
 
     coco = COCO(json_path)
 
@@ -34,10 +34,28 @@ def get_one_bbox_dataset(json_path,img_dir):
     for i,id in tqdm(enumerate(image_ids)):
         data = dict()
         
-        # dataset['image']
+        # image
         file_name = anns['images'][i]['file_name']
         file_path = os.path.join(img_dir,file_name)
         image = Image.open(file_path)
+
+        # bbox
+        catId = coco.getCatIds('person')[0]
+        AnnIds = coco.getAnnIds(id,catIds=catId)
+        bbox = torch.tensor(coco.loadAnns(AnnIds)[0]['bbox'],dtype=torch.float)
+
+        # transform前のimage_wbbox を表示
+        # if __debug__:
+        #     from utils import my_cocoapi
+        #     import numpy as np
+        #     img = np.array(image)
+        #     bbx = np.array(bbox.cpu())
+        #     my_cocoapi.save_image_w1bbox(img,bbx,f'images/{id}_{split}_before_trans.jpg')
+
+        # dataset['image_id']
+        data['image_id'] = id
+
+        # dataset['image']
         if RESIZE:
             original_image_size = image.size
             image = image.resize(IMAGE_SIZE)
@@ -50,18 +68,31 @@ def get_one_bbox_dataset(json_path,img_dir):
         if image.mode == 'L':
             image = image.convert("RGB")
         image = transform(image)
-        
         data['image'] = image #torch.tensor(image,dtype=torch.float).transpose(0,2).transpose(1,2)
 
         # dataset['bbox']
-        AnnIds = coco.getAnnIds(id,catIds=1)
-        data['bbox'] = torch.tensor(coco.loadAnns(AnnIds)[0]['bbox'],dtype=torch.float)
+        import copy 
+        data['bbox'] = copy.deepcopy(bbox)
         if RESIZE:
-            data['bbox'][0] = data['bbox'][0] * IMAGE_SIZE[1] / original_image_size[1] # なぜかx,y が逆、、、
-            data['bbox'][1] = data['bbox'][1] * IMAGE_SIZE[0] / original_image_size[0]
-            data['bbox'][2] = data['bbox'][2] * IMAGE_SIZE[1] / original_image_size[1]
-            data['bbox'][3] = data['bbox'][3] * IMAGE_SIZE[0] / original_image_size[0]
+            data['bbox'][0] = bbox[0] * IMAGE_SIZE[1] / original_image_size[0] # なぜかx,y が逆、、、
+            data['bbox'][1] = bbox[1] * IMAGE_SIZE[0] / original_image_size[1]
+            data['bbox'][2] = bbox[2] * IMAGE_SIZE[1] / original_image_size[0]
+            data['bbox'][3] = bbox[3] * IMAGE_SIZE[0] / original_image_size[1]
+        
         dataset.append(data)
+
+        # if __debug__:
+        #     from utils import my_cocoapi
+        #     import numpy as np
+        #     img = np.array(data['image'])
+        #     img = img.transpose(1,2,0)
+        #     bbx = np.array(data['bbox'])
+        #     my_cocoapi.save_image_w1bbox(img,bbx,f'images/{id}_{split}_after_trans.jpg')
+
+
+        if __debug__:
+            if i >= 10:
+                break
 
     # check data['image','bbox']
     CHECK_DATA=False
@@ -78,19 +109,17 @@ def get_one_bbox_dataset(json_path,img_dir):
         x,y,w,h = data['bbox']
         plt.plot([x,x+w,x+w,x,x],[y,y,y+h,y+h,y],color='black')
 
-    perm = torch.randperm(len(dataset))
-    train_num = int(len(dataset)*0.8)
-    train_dataset = torch.utils.data.Subset(dataset,indices=perm[:train_num])
-    test_dataset = torch.utils.data.Subset(dataset,indices=perm[train_num:])
+    return dataset 
+
 
 
 # mscoco.one_person dataset
-for split in ['train','test']:
+
+def data_loader(split,batch_size,IMAGE_SIZE):
     json_path = datasets_cfg[DATASET][split]['annotation']
     img_dir = datasets_cfg[DATASET][split]['image_dir']
 
-    dataset = get_one_bbox_dataset(json_path,img_dir)
+    dataset = get_one_bbox_dataset(json_path,img_dir,IMAGE_SIZE,split)
+    data_loader= DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-    batch_size=4
-    train_loader= DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    test_loader= DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
+    return data_loader

@@ -10,3 +10,5 @@ See detail for https://stackoverflow.com/questions/76918031/my-simplest-neural-n
 9/10 I moved all old files into old folder. I am now reorganizing the codes.
 
 9/23 I finished reorganizing. Next, I want to make all the settings including model config come from config yaml file.
+
+9/26 I added hydra configs and logger.

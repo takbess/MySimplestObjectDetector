@@ -11,11 +11,10 @@
             "module": "train",
             "justMyCode": true,
             "args": [
-                "--cfg",
-                "models/model1.yaml"
+                "optimizer.type='Adam2'"
             ],
             "env": {
-                "__debug__": "True"
+                "__debug__": "False"
             }
         }
     ]

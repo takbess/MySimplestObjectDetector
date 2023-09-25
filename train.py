@@ -6,6 +6,11 @@ from pathlib import Path
 import sys
 import os
 import argparse
+import hydra
+from omegaconf import DictConfig
+import logging
+
+log = logging.getLogger(__name__)
 
 # from old.TKM.OD import modeling
 import torch
@@ -36,14 +41,14 @@ import torchsummary
 import time 
 
 
-def train():
+def train(cfg):
     # hyper parameter
     loss_index = 0
-    epoch_num = 10
-    batch_size = 16
-    IMAGE_SIZE=(32,32)
-    train_loader = data_loader('train', batch_size,IMAGE_SIZE)
-    test_loader = data_loader('test', batch_size,IMAGE_SIZE)
+    epoch_num = int(cfg.epoch_num)
+    batch_size = int(cfg.batch_size)
+    IMAGE_SIZE= eval(cfg.IMAGE_SIZE)
+    train_loader = data_loader('train', batch_size, IMAGE_SIZE)
+    test_loader = data_loader('test', batch_size, IMAGE_SIZE)
 
     model = modeling.SimpleObjectDetector()
     # check model
@@ -53,8 +58,9 @@ def train():
     # mode
     show_progress = True
 
-    
-    optimizer = torch.optim.SGD(model.parameters(),lr=0.01,momentum=0.9)
+    lr = float(cfg.optimizer.lr)
+    momentum = float(cfg.optimizer.momentum)
+    optimizer = torch.optim.SGD(model.parameters(),lr=lr,momentum=momentum)
 
     # loss
     criterion = nn.L1Loss()    
@@ -86,7 +92,7 @@ def train():
             bbox = bbox.cuda()
 
             pred = model(image)
-            # print(pred[0].tolist())
+            # log.info(pred[0].tolist())
 
             loss = criterion(bbox,pred)
             model.zero_grad()
@@ -98,7 +104,7 @@ def train():
 
         # show_progress
         if show_progress:
-            print("epoch: {}, mean_loss: {}, mean_IoU: {}, elapsed_time: {}".format(epoch, sum_loss/(len(train_loader)*batch_size),
+            log.info("epoch: {}, mean_loss: {}, mean_IoU: {}, elapsed_time: {}".format(epoch, sum_loss/(len(train_loader)*batch_size),
                                                                     sum_IoU/(len(train_loader)*batch_size),
                                                                     time.time() - start  ))
         
@@ -119,29 +125,34 @@ def train():
             elif loss_index==2:
                 loss = metrics.IoU(bbox,pred).sum()
             else:
-                print("loss not implemented error")
+                log.info("loss not implemented error")
                 sys.exit(1)
 
             sum_loss += loss.item()
             sum_IoU += metrics.IoU(bbox,pred).sum()
 
         if show_progress:
-            print("epoch: {}, mean_loss: {}, mean_IoU: {}, elapsed_time: {}".format(epoch, sum_loss/(len(train_loader)*batch_size),
+            log.info("epoch: {}, mean_loss: {}, mean_IoU: {}, elapsed_time: {}".format(epoch, sum_loss/(len(train_loader)*batch_size),
                                                                     sum_IoU/(len(train_loader)*batch_size),
                                                                     time.time() - start  )) 
     
-    print("The end of the training")
-    save_path = f"{args.output_dir}/model.pth"
-    torch.save(model.state_dict,save_path)
-    print(f"the final model.state: {save_path}.")
+    log.info("The end of the training")
+    return model
 
-def main(args):
-    train()
+@hydra.main(config_name="config", version_base=None, config_path="conf")
+def main(cfg: DictConfig) -> None:
+
+    log.info("cfg is the following:")
+    log.info(cfg)
+
+    model = train(cfg)
+
+    hydra_cfg = hydra.core.hydra_config.HydraConfig.get()
+    output_dir = hydra_cfg['runtime']['output_dir']
+    save_path = f"{output_dir}/model_final.pth"
+    torch.save(model.state_dict,save_path)
+    log.info(f"the final model.state is saved: {save_path}.")
+
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=" I'm learning yolov5 ")
-    parser.add_argument("--cfg",type=str, default="",help="model yaml path")
-    parser.add_argument("--epoch",default=10,help="epoch=10 in default")
-    parser.add_argument("--save_dir",default="output")
-    args = parser.parse_args()
-    main(args)
+    main()

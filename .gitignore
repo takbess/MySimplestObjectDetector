@@ -11,3 +11,5 @@ images/
 
 output/
 *.pth
+
+outputs/

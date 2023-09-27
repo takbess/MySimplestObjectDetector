@@ -89,10 +89,10 @@ def get_one_bbox_dataset(json_path,img_dir,IMAGE_SIZE,split):
         #     bbx = np.array(data['bbox'])
         #     my_cocoapi.save_image_w1bbox(img,bbx,f'images/{id}_{split}_after_trans.jpg')
 
-
-        if __debug__:
-            if i >= 10:
-                break
+        # データ数を制限してデバッグしやすくする
+        # if __debug__:
+        #     if i >= 10:
+        #         break
 
     # check data['image','bbox']
     CHECK_DATA=False

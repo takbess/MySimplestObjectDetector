@@ -62,8 +62,8 @@ def _explore_recursive(parent_name,element):
 def train(cfg):
     # hyper parameter
     epoch_num = int(cfg.epoch_num)
-    if __debug__:
-        epoch_num = 3
+    # if __debug__:
+    #     epoch_num = 3
 
     batch_size = int(cfg.batch_size)
     IMAGE_SIZE= eval(cfg.IMAGE_SIZE)
@@ -87,7 +87,7 @@ def train(cfg):
     if cfg.optimizer.loss == "L1":
         criterion = nn.L1Loss()
     elif cfg.optimizer.loss == "L2":
-        criterion == nn.MSELoss()
+        criterion = nn.MSELoss()
     else:
         print("error for loss name")
 
@@ -102,23 +102,22 @@ def train(cfg):
         for epoch in range(1,epoch_num+1):
             log_omegaconf_mlflow(cfg)
 
+            # train
             sum_loss = 0
             sum_IoU = 0
-
             model.train()
-
             # 1 epoch training
             for data in train_loader:
                 image = data['image']
                 bbox = data['bbox']
                 image_id = data['image_id']
-                if __debug__:
-                    for img_id,img,bbx in zip(image_id,image,bbox):
-                        import numpy as np
-                        img = np.array(img.cpu())
-                        img = img.transpose(1,2,0)
-                        bbx = np.array(bbx.cpu())
-                        my_cocoapi.save_image_w1bbox(img,bbx,f'images/{img_id}_train_loader.jpg')
+                # if __debug__:
+                #     for img_id,img,bbx in zip(image_id,image,bbox):
+                #         import numpy as np
+                #         img = np.array(img.cpu())
+                #         img = img.transpose(1,2,0)
+                #         bbx = np.array(bbx.cpu())
+                #         my_cocoapi.save_image_w1bbox(img,bbx,f'images/{img_id}_train_loader.jpg')
 
                 image = image.cuda()
                 bbox = bbox.cuda()
@@ -139,8 +138,12 @@ def train(cfg):
                 log.info("epoch: {}, mean_loss: {}, mean_IoU: {}, elapsed_time: {}".format(epoch, sum_loss/(len(train_loader)*batch_size),
                                                                         sum_IoU/(len(train_loader)*batch_size),
                                                                         time.time() - start  ))
-            
+            mlflow.log_metric("train_mean_loss",sum_loss/(len(train_loader)*batch_size))
+            mlflow.log_metric("train_mean_IoU",sum_IoU/(len(train_loader)*batch_size))
+
             # test
+            sum_loss = 0
+            sum_IoU = 0
             model.eval()
             for data in test_loader:
                 image = data['image']
@@ -156,10 +159,12 @@ def train(cfg):
                 sum_IoU += metrics.IoU(bbox,pred).sum()
 
             if show_progress:
-                log.info("epoch: {}, mean_loss: {}, mean_IoU: {}, elapsed_time: {}".format(epoch, sum_loss/(len(train_loader)*batch_size),
-                                                                        sum_IoU/(len(train_loader)*batch_size),
+                log.info("epoch: {}, mean_loss: {}, mean_IoU: {}, elapsed_time: {}".format(epoch, sum_loss/(len(test_loader)*batch_size),
+                                                                        sum_IoU/(len(test_loader)*batch_size),
                                                                         time.time() - start  )) 
-            mlflow.log_metric("val_mean_loss",sum_loss/(len(train_loader)*batch_size))
+            mlflow.log_metric("val_mean_loss",sum_loss/(len(test_loader)*batch_size))
+            mlflow.log_metric("val_mean_IoU",sum_IoU/(len(test_loader)*batch_size))
+            
     
     log.info("The end of the training")
     return model

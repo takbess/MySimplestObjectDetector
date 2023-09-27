@@ -15,4 +15,4 @@ See detail for https://stackoverflow.com/questions/76918031/my-simplest-neural-n
 
 9/27 I added mlflow.
 
-Todo: add model change configs, optuna
+Todo: add model change configs, optuna. Idk now to use MaxPooling... I may also try adding more layers.

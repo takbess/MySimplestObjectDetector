@@ -13,3 +13,5 @@ output/
 *.pth
 
 outputs/
+multirun/
+mlruns/

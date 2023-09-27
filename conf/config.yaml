@@ -2,8 +2,16 @@ optimizer:
   lr: 0.01
   momentum: 0.9
   type: Adam
-  learning_rate: 0.01
+  loss: L1
 
 epoch_num: 10
 batch_size: 16
 IMAGE_SIZE: (32,32)
+
+show_progress: True
+
+model:
+  one_dim: view
+
+mlflow:
+  runname: try_mlflow

@@ -12,3 +12,7 @@ See detail for https://stackoverflow.com/questions/76918031/my-simplest-neural-n
 9/23 I finished reorganizing. Next, I want to make all the settings including model config come from config yaml file.
 
 9/26 I added hydra configs and logger.
+
+9/27 I added mlflow.
+
+Todo: add model change configs, optuna

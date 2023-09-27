@@ -11,7 +11,10 @@
             "module": "train",
             "justMyCode": true,
             "args": [
-                "optimizer.type='Adam2'"
+                "--multirun",
+                "optimizer.lr=1e-4,1e-3,1e-2,1e-1",
+                "optimizer.momentum=0.9,0.7,0.5,0.3",
+                "optimizer.loss='L1','L2'"
             ],
             "env": {
                 "__debug__": "False"

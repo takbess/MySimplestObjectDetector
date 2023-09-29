@@ -165,9 +165,9 @@ def train(cfg):
             mlflow.log_metric("val_mean_loss",sum_loss/(len(test_loader)*batch_size))
             mlflow.log_metric("val_mean_IoU",sum_IoU/(len(test_loader)*batch_size))
             
-    
+    final_IoU = sum_IoU/(len(test_loader)*batch_size)
     log.info("The end of the training")
-    return model
+    return model,final_IoU
 
 @hydra.main(config_name="config", version_base=None, config_path="conf")
 def main(cfg: DictConfig) -> None:
@@ -175,13 +175,19 @@ def main(cfg: DictConfig) -> None:
     log.info("cfg is the following:")
     log.info(cfg)
 
-    model = train(cfg)
+    model,final_IoU = train(cfg)
 
     hydra_cfg = hydra.core.hydra_config.HydraConfig.get()
     output_dir = hydra_cfg['runtime']['output_dir']
     save_path = f"{output_dir}/model_final.pth"
     torch.save(model.state_dict,save_path)
     log.info(f"the final model.state is saved: {save_path}.")
+
+    if torch.isnan(final_IoU):
+        print("IoU=Nan is converted 1e6")
+        final_IoU = 1e6
+
+    return final_IoU
 
 
 if __name__ == "__main__":

@@ -12,7 +12,7 @@ class ConvLayer(nn.Module):
         return x
 
 
-
+# 
 class SimpleObjectDetector(nn.Module):
     def __init__(self,cfg):
         super().__init__()
@@ -24,6 +24,11 @@ class SimpleObjectDetector(nn.Module):
         self.l3 = nn.Linear(1024,4)
         self.act = nn.ReLU()
         self.pool = nn.MaxPool2d(3,stride=2)
+
+        # config 変えたいとき
+        # from omegaconf import open_dict
+        # with open_dict(self.cfg):
+        #     self.cfg.aaa = 0
 
     def forward(self,x):
         x = self.conv1(x)
@@ -43,6 +48,3 @@ class SimpleObjectDetector(nn.Module):
 # model = SimpleObjectDetector()
 # x = torch.randn(100,3,32,32) # RGB 32*32 image
 # model(x).shape
-
-
-

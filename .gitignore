@@ -1,3 +1,17 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*/__pycache__
+
+dataset/
+
+images/
+*.jpg
+*.png
+
+output/
+*.pth
+
+outputs/
+multirun/
+mlruns/

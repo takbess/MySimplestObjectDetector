@@ -12,11 +12,14 @@
             "justMyCode": true,
             "args": [
                 "--multirun",
-                "optimizer.lr=choice(1e-4,1e-3,1e-2)",
-                "optimizer.momentum=choice(0.9,0.7,0.5,0.3)",
-                "optimizer.loss=choice('L1','L2')",
-                "mlflow.runname=choice('try_optuna_v2')"
-            ]
+                "optimizer.lr=1e-4,1e-3,1e-2,1e-1",
+                "optimizer.momentum=0.9,0.7,0.5,0.3",
+                "optimizer.loss='L1','L2'"
+            ],
+            "env": {
+                "__debug__": False
+            }
         }
     ]
 }
+// __debug__ == True になってしまう

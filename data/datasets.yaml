@@ -1,8 +1,25 @@
-mscoco:
-  test:
-    annotation: "/mnt/c/Users/bt_ga/allpython/DATASET/coco/annotations/datasets_fewshot/cocosplit/datasplit/5k.json"
-    image_dir: "/mnt/c/Users/bt_ga/allpython/DATASET/coco/images/val2014"
+# after ./download_dataset.sh and ??? we have the followings
+# mscoco:
+#   test:
+#     annotation: "/mnt/c/Users/bt_ga/allpython/DATASET/coco/annotations/datasets_fewshot/cocosplit/datasplit/5k.json"
+#     image_dir: "/mnt/c/Users/bt_ga/allpython/DATASET/coco/images/val2014"
 
-  one_person:
-    annotation: "/mnt/c/Users/bt_ga/allpython/DATASET/coco/annotations/5k_one_person.json"
-    image_dir: "/mnt/c/Users/bt_ga/allpython/DATASET/coco/images/val2014"
+#   one_person:
+#     annotation: "/mnt/c/Users/bt_ga/allpython/DATASET/coco/annotations/5k_one_person.json"
+#     image_dir: "/mnt/c/Users/bt_ga/allpython/DATASET/coco/images/val2014"
+
+PascalVOC:
+  train:
+    annotation: "dataset/train/_annotations.coco.json"
+    image_dir: "dataset/train"
+  test:
+    annotation: "dataset/valid/_annotations.coco.json"
+    image_dir: "dataset/valid"
+
+PascalVOC_one_person:
+  train:
+    annotation: "dataset/train/_annotations.coco_one_person.json"
+    image_dir: "dataset/train"
+  test:
+    annotation: "dataset/valid/_annotations.coco_one_person.json"
+    image_dir: "dataset/valid"
